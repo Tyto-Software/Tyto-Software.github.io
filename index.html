@@ -11,18 +11,19 @@
     <div class="navbar">
       <h1 class="logo">Tytochan</h1>
       <nav>
-        <ul>
+        <ul id="nav-links">
           <li><a href="index.html">Home</a></li>
           <li><a href="studio.html">Paint Studio</a></li>
-          <li><a href="login.html">Login</a></li>
-          <li><a href="signup.html">Sign Up</a></li>
+          <li id="login-link"><a href="login.html">Login</a></li>
+          <li id="signup-link"><a href="signup.html">Sign Up</a></li>
+          <li id="logout-link" style="display: none;"><button id="logoutBtn">Logout</button></li>
         </ul>
       </nav>
     </div>
   </header>
 
   <main class="hero">
-    <h2>Welcome to Tytochan</h2>
+    <h2 id="welcomeText">Welcome to Tytochan</h2>
     <p>Create art. Share it. Explore your imagination.</p>
     <a href="studio.html" class="btn">Go to Paint Studio</a>
   </main>
@@ -31,6 +32,41 @@
     <p>© 2025 Tytochan. All rights reserved.</p>
   </footer>
 
-  <script src="script.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="firebase.js"></script>
+
+  <!-- Auth Greeting Script -->
+  <script>
+    const welcomeText = document.getElementById('welcomeText');
+    const loginLink = document.getElementById('login-link');
+    const signupLink = document.getElementById('signup-link');
+    const logoutLink = document.getElementById('logout-link');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        // User is signed in
+        const email = user.email;
+        welcomeText.textContent = `Welcome back, ${email}`;
+        loginLink.style.display = 'none';
+        signupLink.style.display = 'none';
+        logoutLink.style.display = 'inline';
+      } else {
+        // No user signed in
+        welcomeText.textContent = 'Welcome to Tytochan';
+        loginLink.style.display = 'inline';
+        signupLink.style.display = 'inline';
+        logoutLink.style.display = 'none';
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      firebase.auth().signOut().then(() => {
+        window.location.reload();
+      });
+    });
+  </script>
 </body>
 </html>
