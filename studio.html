@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tytochan Paint Studio</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    canvas {
+      border: 2px solid #333;
+      display: block;
+      margin: 2rem auto;
+      background: #fff;
+    }
+
+    .tools {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .tools button {
+      margin: 0.5rem;
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <h1 class="logo">Tytochan Studio</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><button id="logoutBtn">Logout</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h2 style="text-align:center">Paint Something Awesome!</h2>
+    <canvas id="paintCanvas" width="800" height="500"></canvas>
+
+    <div class="tools">
+      <button id="clearBtn">Clear Canvas</button>
+      <label>
+        Color:
+        <input type="color" id="colorPicker" value="#000000">
+      </label>
+      <label>
+        Brush Size:
+        <input type="range" id="brushSize" min="1" max="50" value="5">
+      </label>
+    </div>
+  </main>
+
+  <footer>
+    <p style="text-align:center">© 2025 Tytochan Studio</p>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="firebase.js"></script>
+
+  <script>
+    // Auth check
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html"; // redirect if not signed in
+      }
+    });
+
+    // Logout button
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "index.html";
+      });
+    });
+
+    // Paint logic
+    const canvas = document.getElementById("paintCanvas");
+    const ctx = canvas.getContext("2d");
+    const clearBtn = document.getElementById("clearBtn");
+    const colorPicker = document.getElementById("colorPicker");
+    const brushSize = document.getElementById("brushSize");
+
+    let painting = false;
+
+    function startPaint(e) {
+      painting = true;
+      draw(e);
+    }
+
+    function endPaint() {
+      painting = false;
+      ctx.beginPath();
+    }
+
+    function draw(e) {
+      if (!painting) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      ctx.lineWidth = brushSize.value;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = colorPicker.value;
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+
+    canvas.addEventListener("mousedown", startPaint);
+    canvas.addEventListener("mouseup", endPaint);
+    canvas.addEventListener("mouseout", endPaint);
+    canvas.addEventListener("mousemove", draw);
+
+    clearBtn.addEventListener("click", () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+  </script>
+</body>
+</html>
