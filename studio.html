@@ -44,7 +44,7 @@
     <canvas id="paintCanvas" width="800" height="500"></canvas>
 
     <div class="tools">
-<button id="downloadBtn">Download Drawing</button>
+      <button id="downloadBtn">Download Drawing</button>
       <button id="clearBtn">Clear Canvas</button>
       <label>
         Color:
@@ -64,67 +64,11 @@
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <!-- Firebase Config -->
   <script src="firebase.js"></script>
 
-  <script>
-    // Auth check
-    firebase.auth().onAuthStateChanged(user => {
-      if (!user) {
-        window.location.href = "login.html"; // redirect if not signed in
-      }
-    });
-
-    // Logout button
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      firebase.auth().signOut().then(() => {
-        window.location.href = "index.html";
-      });
-    });
-
-    // Paint logic
-    const canvas = document.getElementById("paintCanvas");
-    const ctx = canvas.getContext("2d");
-    const clearBtn = document.getElementById("clearBtn");
-    const colorPicker = document.getElementById("colorPicker");
-    const brushSize = document.getElementById("brushSize");
-
-    let painting = false;
-
-    function startPaint(e) {
-      painting = true;
-      draw(e);
-    }
-
-    function endPaint() {
-      painting = false;
-      ctx.beginPath();
-    }
-
-    function draw(e) {
-      if (!painting) return;
-
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      ctx.lineWidth = brushSize.value;
-      ctx.lineCap = "round";
-      ctx.strokeStyle = colorPicker.value;
-
-      ctx.lineTo(x, y);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-    }
-
-    canvas.addEventListener("mousedown", startPaint);
-    canvas.addEventListener("mouseup", endPaint);
-    canvas.addEventListener("mouseout", endPaint);
-    canvas.addEventListener("mousemove", draw);
-
-    clearBtn.addEventListener("click", () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    });
-  </script>
+  <!-- Studio Logic -->
+  <script src="studio.js"></script>
 </body>
 </html>
